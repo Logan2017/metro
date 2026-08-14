@@ -204,6 +204,13 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
   border-color:#e0b52b !important;
 }
 
+
+/* v1.0.3 — modo Ayuda y semáforos coherentes */
+.quiz-actions{display:flex;align-items:center;gap:16px}.help-toggle{display:flex;align-items:center;gap:9px;font-weight:700;cursor:pointer;user-select:none}.help-toggle input{display:none}.help-slider{width:42px;height:24px;border-radius:99px;background:#cbd5e1;position:relative;transition:.2s}.help-slider:after{content:"";position:absolute;width:20px;height:20px;left:2px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0003;transition:.2s}.help-toggle input:checked+.help-slider{background:#0d6efd}.help-toggle input:checked+.help-slider:after{transform:translateX(18px)}
+#qOptions.help-on .option.help-3{background:#dcf8d8 !important;border-color:#b7d9b4 !important}#qOptions.help-on .option.help-2{background:#f0f8d8 !important;border-color:#d5dfb8 !important}#qOptions.help-on .option.help-1{background:#fff6dc !important;border-color:#e7d8b5 !important}#qOptions.help-on .option.help-0{background:#ffe1df !important;border-color:#e5b9b6 !important}#qOptions.help-on .option.selected{border-color:#3157e8 !important;box-shadow:0 0 0 2px rgba(49,87,232,.16) inset !important}#qOptions.help-on .option.help-3.selected{background:#dcf8d8 !important}#qOptions.help-on .option.help-2.selected{background:#f0f8d8 !important}#qOptions.help-on .option.help-1.selected{background:#fff6dc !important}#qOptions.help-on .option.help-0.selected{background:#ffe1df !important}
+.tpt-matrix-cell.max{background:#67d900 !important}.tpt-matrix-cell.good{background:#b9e85a !important}.tpt-matrix-cell.mid{background:#ffc107 !important}.tpt-matrix-cell.bad{background:#ff1d16 !important}
+.result-status{display:inline-flex;align-items:center;gap:8px;font-weight:700}.result-dot{width:13px;height:13px;border-radius:50%;display:inline-block}.result-dot.green{background:#10b923}.result-dot.yellow{background:#ffc107}.result-dot.red{background:#e91c24}
+#results .back-home{margin-top:22px}
 </style>
 
 <style>
@@ -319,7 +326,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
    </section>
 
    <section id="quiz" class="card hidden">
-    <div class="quiz-meta"><div><span id="qCounter"></span> <span class="pill" id="qTag"></span></div><div class="timer" id="timer"></div></div>
+    <div class="quiz-meta"><div><span id="qCounter"></span> <span class="pill" id="qTag"></span> <span class="pill hidden" id="qScaleTag"></span></div><div class="quiz-actions"><label id="helpToggleWrap" class="help-toggle hidden"><input type="checkbox" id="helpToggle"><span class="help-slider"></span><span>Ayuda</span></label><div class="timer" id="timer"></div></div></div>
     <div class="progress"><span id="qProgress"></span></div>
     <div class="question" id="qText"></div>
     <div id="qVisual"></div>
@@ -336,7 +343,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
    <section id="results" class="card hidden">
      <h2 class="section-title">Resultado</h2>
      <div id="resultSummary"></div>
-     <button class="btn primary" id="backHome" style="margin-top:24px">Volver al inicio</button>
+     <button class="btn primary back-home" id="backHome" style="margin-top:24px">Volver al inicio</button>
    </section>
   </main>
 
@@ -361,7 +368,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v1.0.2";
+const APP_VERSION = "v1.0.3";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -633,17 +640,22 @@ function showQuestion(){
  document.getElementById("nextBtn").classList.add("hidden");document.getElementById("finishBtn").classList.add("hidden");document.getElementById("prevBtn").classList.toggle("hidden",idx===0);
  document.getElementById("qFeedback").innerHTML="";document.getElementById("qVisual").innerHTML="";
  const x=session[idx];document.getElementById("qCounter").textContent=`Pregunta ${idx+1} de ${session.length}`;
- document.getElementById("qTag").textContent=currentMode==="knowledge"?x.sub:(currentMode==="aptitude"?`${x.block} · ${x.kind}`:(tptFullMode?`TPT · ítem ${x.id}`:x.name));
+ document.getElementById("qTag").textContent=currentMode==="knowledge"?x.sub:(currentMode==="aptitude"?`${x.block} · ${x.kind}`:`TPT · ítem ${x.id}`);
+ const scaleTag=document.getElementById("qScaleTag"), helpWrap=document.getElementById("helpToggleWrap"), helpToggle=document.getElementById("helpToggle");
+ const isTpt=currentMode==="personality"; helpWrap.classList.toggle("hidden",!isTpt);
+ if(isTpt){ scaleTag.textContent=x.name; scaleTag.classList.toggle("hidden",!helpToggle.checked); } else { scaleTag.classList.add("hidden"); }
  document.getElementById("qProgress").style.width=`${idx/session.length*100}%`;document.getElementById("qText").textContent=x.q;
  const opts=document.getElementById("qOptions");opts.innerHTML="";
  if(currentMode==="personality"){
   ["Casi nunca","A veces","Con frecuencia","Casi siempre"].forEach((o,i)=>{
     let b=document.createElement("button");
     b.className="option";
+    const helpScore=x.dir===1?i:3-i; b.classList.add(`help-${helpScore}`);
     b.textContent=`${"ABCD"[i]}. ${o}`;
     b.onclick=()=>answerPersonality(i,b);
     opts.appendChild(b);
   });
+  opts.classList.toggle("help-on",document.getElementById("helpToggle").checked);
   if(opts.children.length!==4){
     opts.innerHTML='<div class="notice">No se han podido cargar las opciones de personalidad. Recarga la página para obtener la última versión.</div>';
   } else {
@@ -741,27 +753,26 @@ function tptBestRaw(a){ return a.dir===1 ? 3 : 0; }
 // v1.0.2 — el semáforo se interpreta según el objetivo de cada escala,
 // no suponiendo que una puntuación alta sea siempre mejor.
 function tptTraffic(score, scale){
-  const lowTarget = ["Desajuste","Ansiedad","Depresión"];
-  const middleTarget = ["Sinceridad","Tolerancia a la frustración","Adaptación al cambio"];
-
-  if(lowTarget.includes(scale)){
-    if(score===0) return {cls:"tpt-green", icon:"🟢", label:"Muy favorable"};
-    if(score===1) return {cls:"tpt-green2", icon:"🟢", label:"Favorable"};
-    if(score===2) return {cls:"tpt-yellow", icon:"🟡", label:"Poco favorable"};
-    return {cls:"tpt-red", icon:"🔴", label:"Desfavorable"};
-  }
-
-  if(middleTarget.includes(scale)){
-    if(score===2) return {cls:"tpt-green", icon:"🟢", label:"Muy favorable"};
-    if(score===1 || score===3) return {cls:"tpt-green2", icon:"🟢", label:"Favorable"};
-    return {cls:"tpt-yellow", icon:"🟡", label:"Poco favorable"};
-  }
-
+  // Semáforo por ítem: cuatro niveles únicos, sin reinterpretar la dirección por escala.
+  // score ya incorpora si el ítem es directo o inverso.
   if(score===3) return {cls:"tpt-green", icon:"🟢", label:"Muy favorable"};
   if(score===2) return {cls:"tpt-green2", icon:"🟢", label:"Favorable"};
   if(score===1) return {cls:"tpt-yellow", icon:"🟡", label:"Poco favorable"};
   return {cls:"tpt-red", icon:"🔴", label:"Desfavorable"};
 }
+function tptScaleStatus(points, range){
+  if(range.startsWith("≥")){
+    const min=Number(range.replace("≥",""));
+    if(points<min) return {kind:"red",label:"Fuera"};
+    if(points<=min+1) return {kind:"yellow",label:"Dentro · justo"};
+    return {kind:"green",label:"Dentro"};
+  }
+  const [mn,mx]=range.split("–").map(Number);
+  if(points<mn || points>mx) return {kind:"red",label:"Fuera"};
+  if(points===mn || points===mx || (mx-mn>=4 && (points===mn+1 || points===mx-1))) return {kind:"yellow",label:"Dentro · justo"};
+  return {kind:"green",label:"Dentro"};
+}
+
 function tptScalePurpose(scale){
  const m={
  "Sinceridad":"la forma de reconocer errores, límites y reacciones personales sin proyectar una imagen artificialmente perfecta ni una indiferencia poco creíble",
@@ -891,10 +902,8 @@ function finishSession(){
      const aa=[...latestScale.values()];
      const pts=aa.reduce((s,a)=>s+a.score,0);
      const ref=TPT_SCALES[name].range;
-     let ok=false;
-     if(ref.startsWith("≥"))ok=pts>=Number(ref.replace("≥",""));
-     else { const [mn,mx]=ref.split("–").map(Number); ok=pts>=mn&&pts<=mx; }
-     return `<tr><td><b>${name}</b></td><td>${pts}/30</td><td>${ref}</td><td>${ok?"✓ Dentro":"⚠ Fuera"}</td></tr>`;
+     const status=tptScaleStatus(pts,ref);
+     return `<tr><td><b>${name}</b></td><td>${pts}/30</td><td>${ref}</td><td><span class="result-status"><span class="result-dot ${status.kind}"></span>${status.label}</span></td></tr>`;
    }).join("");
    const pAvg=answers.length?(answers.reduce((a,b)=>a+(b.seconds||0),0)/answers.length).toFixed(1):"—";
    html=`<div class="statgrid"><div class="stat"><b>${answers.length}</b><span>ítems respondidos</span></div><div class="stat"><b>${pAvg} s</b><span>tiempo medio</span></div><div class="stat"><b>${selectedScales.length}</b><span>escalas evaluadas</span></div></div>
@@ -1071,6 +1080,13 @@ document.getElementById("startKnowledge").onclick=startKnowledge;document.getEle
 document.getElementById("prevBtn").onclick=previous;document.getElementById("nextBtn").onclick=next;document.getElementById("finishBtn").onclick=finishSession;document.getElementById("blankBtn").onclick=leaveBlank;document.getElementById("backHome").onclick=()=>showView("home");
 document.getElementById("resetAll").onclick=()=>{if(confirm("¿Borrar todo el progreso guardado?")){localStorage.removeItem("metroPrepV084");location.reload()}};
 buildTree();buildCompetency();buildTptTree();renderAllStats();
+
+// v1.0.3 — Ayuda TPT: categoría + gradación de respuestas.
+document.getElementById("helpToggle")?.addEventListener("change",function(){
+  const x=session[idx]; if(currentMode!=="personality" || !x)return;
+  document.getElementById("qScaleTag").classList.toggle("hidden",!this.checked);
+  document.getElementById("qOptions").classList.toggle("help-on",this.checked);
+});
 </script>
 </body>
 </html>
