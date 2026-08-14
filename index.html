@@ -41,6 +41,25 @@ select,input[type=number]{border:1px solid #d4d8e0;border-radius:9px;background:
 .result-table{width:100%;border-collapse:collapse;margin-top:12px}.result-table th,.result-table td{text-align:left;padding:9px;border-bottom:1px solid var(--line);font-size:13px}
 .comp-row{margin:10px 0}.comp-row .head{display:flex;justify-content:space-between;font-size:12px}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
+
+.tpt-review{display:grid;gap:16px;margin-top:16px}
+.tpt-review-card{border:1px solid #dfe3ea;border-left-width:7px;border-radius:16px;padding:18px;background:#fff}
+.tpt-review-card.tpt-red{border-left-color:#dc3545}
+.tpt-review-card.tpt-yellow{border-left-color:#f0ad00}
+.tpt-review-card.tpt-green2{border-left-color:#76b947}
+.tpt-review-card.tpt-green{border-left-color:#198754}
+.tpt-review-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;font-size:17px;line-height:1.45}
+.tpt-pill{white-space:nowrap;font-weight:700;font-size:14px}
+.tpt-review-meta{display:flex;flex-wrap:wrap;gap:10px 24px;margin:14px 0;color:#4b5563}
+.tpt-best{margin:10px 0;padding:11px 14px;border-radius:10px;background:#f4f7fb}
+.tpt-explain{margin-top:12px;line-height:1.5}
+@media(max-width:700px){
+ .tpt-review-head{display:block}
+ .tpt-pill{display:inline-block;margin-top:10px}
+ .tpt-review-meta{display:block}
+ .tpt-review-meta span{display:block;margin:6px 0}
+}
+
 </style>
 </head>
 <body>
@@ -165,7 +184,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v0.9.0";
+const APP_VERSION = "v0.9.1";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -499,6 +518,69 @@ function commitPending(){
  renderAllStats();
 }
 function next(){commitPending();idx++;showQuestion();renderAllStats()}
+
+function tptLetter(raw){ return ["A","B","C","D"][raw] || "—"; }
+function tptAnswerText(raw){ return ["Casi nunca","A veces","Con frecuencia","Casi siempre"][raw] || "—"; }
+function tptBestRaw(a){ return a.dir===1 ? 3 : 0; }
+function tptTraffic(score){
+  if(score===3) return {cls:"tpt-green", icon:"🟢", label:"Muy favorable"};
+  if(score===2) return {cls:"tpt-green2", icon:"🟢", label:"Favorable"};
+  if(score===1) return {cls:"tpt-yellow", icon:"🟡", label:"Poco favorable"};
+  return {cls:"tpt-red", icon:"🔴", label:"Desfavorable"};
+}
+function tptScalePurpose(scale){
+ const m={
+ "Sinceridad":"la forma de reconocer errores, límites y reacciones personales sin proyectar una imagen artificialmente perfecta ni una indiferencia poco creíble",
+ "Desajuste":"la presencia de pensamientos, percepciones o conductas que pueden reflejar un ajuste personal poco convencional",
+ "Ansiedad":"el grado de preocupación, tensión, inseguridad o anticipación negativa ante situaciones cotidianas",
+ "Depresión":"el tono emocional, el desánimo, la energía y la percepción general de bienestar personal",
+ "Tolerancia al estrés":"la capacidad para mantener el funcionamiento y la estabilidad cuando aparecen presión, tensión, imprevistos o dificultades",
+ "Autoconcepto":"la confianza en la propia capacidad, valía y eficacia personal",
+ "Tolerancia a la frustración":"la capacidad para persistir y regular la reacción cuando aparecen obstáculos, esperas, errores o resultados adversos",
+ "Adaptación al cambio":"la disposición para aceptar cambios, novedades e imprevistos sin quedar excesivamente bloqueado por ellos",
+ "Interés por culturas":"la apertura, curiosidad y comodidad ante personas, costumbres y culturas diferentes",
+ "Disponibilidad":"la disposición a implicarse, ayudar, estar localizable y asumir necesidades que pueden exigir flexibilidad personal",
+ "Inteligencia social":"la facilidad para comprender, tratar, influir y relacionarse eficazmente con otras personas",
+ "Integración social":"la comodidad para participar, relacionarse y desenvolverse dentro de grupos y situaciones sociales",
+ "Trabajo en equipo":"la disposición para colaborar, compartir, coordinarse y contribuir al objetivo común",
+ "Autoexigencia profesional":"el compromiso con el rendimiento, la responsabilidad, la mejora y el cumplimiento profesional",
+ "Dinamismo":"el nivel de energía, actividad, iniciativa y preferencia por mantenerse activo",
+ "Tesón y constancia":"la persistencia para terminar tareas y mantener el esfuerzo aunque aparezcan monotonía, obstáculos o dificultades"
+ };
+ return m[scale]||"el rasgo asociado a esta escala";
+}
+function tptSpecificReason(a,q){
+ const best=tptBestRaw(a), bestL=tptLetter(best), bestT=tptAnswerText(best);
+ const direction=a.dir===1
+   ? "En este ítem, mostrar con mayor frecuencia la conducta descrita aumenta la puntuación de la escala."
+   : "Este ítem está corregido en sentido inverso: cuanto menos te identifiques con la afirmación, mayor es la puntuación.";
+ let nuance="";
+ if(a.score===3) nuance="Tu respuesta coincide con la alternativa que más puntúa en este ítem.";
+ else if(a.score===2) nuance="Tu respuesta está próxima al extremo más favorable, aunque existe una alternativa que aporta un punto más.";
+ else if(a.score===1) nuance="Tu respuesta se aleja del extremo que más puntúa; conviene revisar qué plantea exactamente el enunciado y su relación con la escala.";
+ else nuance="Tu respuesta se sitúa en el extremo opuesto al que más puntúa en este ítem.";
+ return `<b>Qué evalúa:</b> ${tptScalePurpose(a.scale)}.<br><br><b>Cómo se corrige:</b> ${direction}<br><br><b>Interpretación:</b> ${nuance} La alternativa de máxima puntuación es <b>${bestL} · ${bestT}</b>.`;
+}
+function renderTptReview(){
+ const sorted=[...answers].sort((a,b)=>a.score-b.score || a.id-b.id);
+ return `<h3 style="margin-top:28px">Revisión de respuestas</h3>
+ <p class="small">Primero aparecen las respuestas que más se alejan de la puntuación máxima. El semáforo indica los puntos obtenidos en cada ítem, no si una afirmación es objetivamente “verdadera” o “falsa”.</p>
+ <div class="tpt-review">${sorted.map(a=>{
+   const q=TPT_QUESTIONS.find(x=>x.id===a.id)?.q||"";
+   const tr=tptTraffic(a.score), best=tptBestRaw(a);
+   return `<div class="tpt-review-card ${tr.cls}">
+     <div class="tpt-review-head"><span><b>${a.id}. ${q}</b></span><span class="tpt-pill">${tr.icon} ${tr.label}</span></div>
+     <div class="tpt-review-meta">
+       <span><b>Tu respuesta:</b> ${tptLetter(a.raw)} · ${tptAnswerText(a.raw)}</span>
+       <span><b>Puntuación:</b> ${a.score}/3</span>
+       <span><b>Escala:</b> ${a.scale}</span>
+     </div>
+     ${a.score<3?`<div class="tpt-best"><b>Respuesta que más puntúa:</b> ${tptLetter(best)} · ${tptAnswerText(best)}</div>`:""}
+     <div class="notice tpt-explain">${tptSpecificReason(a,q)}</div>
+   </div>`;
+ }).join("")}</div>`;
+}
+
 function finishSession(){
  commitPending();
  clearInterval(timerId);
@@ -522,7 +604,7 @@ function finishSession(){
    const pAvg=answers.length?(answers.reduce((a,b)=>a+(b.seconds||0),0)/answers.length).toFixed(1):"—";
    html=`<div class="statgrid"><div class="stat"><b>${answers.length}</b><span>ítems respondidos</span></div><div class="stat"><b>${pAvg} s</b><span>tiempo medio</span></div><div class="stat"><b>${selectedScales.length}</b><span>escalas evaluadas</span></div></div>
    <h3>Resultado TPT</h3><table class="result-table"><thead><tr><th>Escala</th><th>Puntuación</th><th>Referencia</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>
-   <div class="notice">Puntuación de entrenamiento calculada con A=0, B=1, C=2, D=3 en ítems directos y 3,2,1,0 en inversos, según la clave aportada.</div>`;
+   <div class="notice">Puntuación de entrenamiento calculada con A=0, B=1, C=2, D=3 en ítems directos y 3,2,1,0 en inversos, según la clave aportada.</div>${renderTptReview()}`;
   }else{
    const net=(correct-wrong/3).toFixed(2);
    html=`<div class="statgrid"><div class="stat"><b>${correct}</b><span>correctas</span></div><div class="stat"><b>${wrong}</b><span>errores</span></div><div class="stat"><b>${blank}</b><span>blancas</span></div><div class="stat"><b>${net}</b><span>puntuación neta</span></div></div>`;
