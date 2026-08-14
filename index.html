@@ -59,7 +59,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
   background:#fff;
 }
 .tpt-review-card.tpt-red{border-left-color:#ff2d3b}
-.tpt-review-card.tpt-yellow{border-left-color:#ffb000}
+.tpt-review-card.tpt-yellow{border-left-color:#ffc107}
 .tpt-review-card.tpt-green2{border-left-color:#a9d900}
 .tpt-review-card.tpt-green{border-left-color:#74d400}
 
@@ -119,9 +119,9 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
   font-weight:700;
 }
 .tpt-matrix-cell:last-child{border-right:none}
-.tpt-matrix-cell.max{background:#68d900}
-.tpt-matrix-cell.good{background:#d9f200}
-.tpt-matrix-cell.mid{background:#ffad0a}
+.tpt-matrix-cell.max{background:#66d400}
+.tpt-matrix-cell.good{background:#b7e35a}
+.tpt-matrix-cell.mid{background:#ffc107}
 .tpt-matrix-cell.bad{background:#ef1b17}
 .tpt-radio{
   display:inline-flex;
@@ -188,17 +188,26 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 }
 
 
-/* v1.0.0 — selección editable y persistente */
+/* v1.0.1 — selección editable y persistente */
 #qOptions .option.selected{
   border-color:#3157e8 !important;
   background:#eef2ff !important;
   box-shadow:0 0 0 2px rgba(49,87,232,.12) inset;
 }
 
+
+/* v1.0.1 — correspondencia visual exacta del semáforo */
+.tpt-review-card.tpt-yellow{border-left-color:#ffc107 !important}
+.tpt-matrix-cell.mid{background:#ffc107 !important}
+.tpt-explain-box{
+  background:#fff8dc !important;
+  border-color:#e0b52b !important;
+}
+
 </style>
 
 <style>
-/* v1.0.0 — explicación psicológica */
+/* v1.0.1 — explicación psicológica */
 .tpt-review-explanation,
 .tpt-review-card .explanation,
 .tpt-review-card .tpt-explanation,
@@ -213,7 +222,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 
 
 <style>
-/* v1.0.0 — explicación siempre amarilla; semáforo se mantiene en lateral */
+/* v1.0.1 — explicación siempre amarilla; semáforo se mantiene en lateral */
 .tpt-explain-box{
   background:#fff8dc !important;
   border-color:#e0b52b !important;
@@ -352,7 +361,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v1.0.0";
+const APP_VERSION = "v1.0.1";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -784,7 +793,10 @@ const TPT_ITEM_EXPLANATIONS_V100 = {"1": "<b>Qué se valora:</b> persistencia an
 function tptShortExplanation(a,q){
   const best=tptBestRaw(a);
   const bestL=tptLetter(best), bestT=tptAnswerText(best);
-  return TPT_ITEM_EXPLANATIONS_V100[q.id] || `<b>Qué se valora:</b> ${a.scale}. <b>Máxima puntuación:</b> ${bestL} · ${bestT}.`;
+  // La clave de la explicación es el id guardado en la respuesta (a.id).
+  // q aquí es únicamente el texto del enunciado.
+  return TPT_ITEM_EXPLANATIONS_V100[a.id] ||
+    `<b>Qué se valora:</b> ${a.scale}. <b>Máxima puntuación:</b> ${bestL} · ${bestT}.`;
 }
 
 function tptAnswerStrip(a){
