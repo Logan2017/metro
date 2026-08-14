@@ -80,7 +80,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 }
 .tpt-status{
   font-weight:800;
-  font-size:16px;
+  font-size:14px;
   white-space:nowrap;
   text-align:right;
   color:#1f2937;
@@ -172,7 +172,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
   }
   .tpt-matrix{width:132px}
   .tpt-question{font-size:17px}
-  .tpt-status{font-size:15px}
+  .tpt-status{font-size:13px}
 }
 @media(max-width:820px){
   .tpt-card-top{
@@ -181,7 +181,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
     gap:10px;
   }
   .tpt-matrix-wrap{justify-content:flex-start}
-  .tpt-status{text-align:left;font-size:15px}
+  .tpt-status{text-align:left;font-size:13px}
   .tpt-matrix{width:132px;max-width:100%}
   .tpt-question{font-size:17px}
   .tpt-explain-box{font-size:14px}
@@ -311,7 +311,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v0.9.4";
+const APP_VERSION = "v0.9.5";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -692,19 +692,53 @@ function tptSpecificReason(a,q){
 function tptShortExplanation(a,q){
  const best=tptBestRaw(a);
  const bestL=tptLetter(best), bestT=tptAnswerText(best);
- const dirText=a.dir===1
-   ? "En esta pregunta puntúa más identificarte con la conducta descrita."
-   : "En esta pregunta puntúa más no identificarte con la conducta descrita.";
- if(a.score===3){
-   return `<b>Respuesta de máxima puntuación.</b> ${dirText}`;
+
+ // Explicaciones especialmente redactadas para ítems donde la lógica puede resultar
+ // contraintuitiva. La puntuación sigue siendo exactamente la de la clave TPT.
+ const specific={
+   12:"<b>Qué se valora:</b> la reacción ante los propios errores y la imagen que proyectamos. <b>En este ítem:</b> que un fallo profesional te importe y no te resulte indiferente que todo el mundo lo conozca refleja una reacción más natural y responsable.",
+   18:"<b>Qué se valora:</b> la sinceridad al describir la relación con la autoridad. <b>En este ítem:</b> afirmar que se aceptan siempre las órdenes «sin rechistar» puede transmitir una imagen excesivamente perfecta o complaciente; reconocer cierto criterio propio resulta más realista.",
+   49:"<b>Qué se valora:</b> la capacidad de reconocer emociones socialmente poco deseables. <b>En este ítem:</b> admitir que en alguna ocasión puede aparecer cierta envidia resulta más humano y creíble que presentarse como completamente ajeno a esa emoción.",
+   57:"<b>Qué se valora:</b> la necesidad de aprobación y la sinceridad al reconocerla. <b>En este ítem:</b> es normal valorar el afecto de los demás; una respuesta demasiado extrema en cualquiera de los sentidos puede proyectar una imagen poco matizada.",
+   71:"<b>Qué se valora:</b> la sinceridad frente a afirmaciones excesivamente idealizadas. <b>En este ítem:</b> el salario suele tener alguna importancia aunque exista satisfacción laboral; negarle prácticamente todo peso puede resultar poco realista.",
+   136:"<b>Qué se valora:</b> la reacción emocional y profesional ante una injusticia. <b>En este ítem:</b> una injusticia puede afectar, pero dejar que determine claramente el rendimiento refleja menor regulación de la respuesta profesional."
+ };
+
+ if(specific[q.id]){
+   return specific[q.id] + ` <b>Máxima puntuación:</b> ${bestL} · ${bestT}.`;
  }
- if(a.score===2){
-   return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta está próxima al extremo favorable.`;
- }
- if(a.score===1){
-   return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta se aleja del criterio de esta escala.`;
- }
- return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta está en el extremo contrario al criterio de esta pregunta.`;
+
+ const purpose={
+  "Sinceridad":"la naturalidad y credibilidad de la respuesta, evitando proyectar una imagen artificialmente perfecta",
+  "Desajuste":"el ajuste de pensamientos, percepciones y conductas a la realidad cotidiana",
+  "Ansiedad":"la tendencia a preocuparse, anticipar problemas o experimentar tensión e inseguridad",
+  "Depresión":"el tono emocional, el bienestar, la energía y la presencia de desánimo",
+  "Tolerancia al estrés":"la capacidad para conservar la calma y seguir funcionando bajo presión",
+  "Autoconcepto":"la confianza en la propia capacidad, eficacia y valía personal",
+  "Tolerancia a la frustración":"la capacidad para aceptar obstáculos y contratiempos sin reaccionar de forma desproporcionada",
+  "Adaptación al cambio":"la flexibilidad ante novedades, cambios de planes e imprevistos",
+  "Interés por culturas":"la apertura y curiosidad hacia personas, costumbres y culturas diferentes",
+  "Disponibilidad":"la disposición a ayudar, implicarse y mostrar flexibilidad cuando la situación lo requiere",
+  "Inteligencia social":"la habilidad para comprender a los demás y desenvolverse eficazmente en las relaciones",
+  "Integración social":"la comodidad para participar, relacionarse y formar parte de grupos",
+  "Trabajo en equipo":"la cooperación, coordinación y contribución al objetivo común",
+  "Autoexigencia profesional":"el compromiso con el trabajo, la responsabilidad y la mejora del rendimiento",
+  "Dinamismo":"la energía, iniciativa y preferencia por mantenerse activo",
+  "Tesón y constancia":"la perseverancia para continuar y terminar lo iniciado pese a dificultades o monotonía"
+ };
+
+ const what=purpose[a.scale]||"el rasgo psicológico asociado a esta escala";
+ const direction=a.dir===1
+   ? "la conducta descrita se interpreta favorablemente cuando aparece con mayor frecuencia"
+   : "la afirmación está planteada en sentido inverso: puntúa más cuanto menos te identificas con la conducta descrita";
+
+ let proximity="";
+ if(a.score===3) proximity="Tu respuesta coincide con el extremo de máxima puntuación.";
+ else if(a.score===2) proximity="Tu respuesta está cerca del extremo de máxima puntuación.";
+ else if(a.score===1) proximity="Tu respuesta se aleja del perfil que puntúa más en este ítem.";
+ else proximity="Tu respuesta está en el extremo contrario al que obtiene la máxima puntuación.";
+
+ return `<b>Qué se valora:</b> ${what}. <b>En este ítem:</b> ${direction}. ${proximity} <b>Máxima puntuación:</b> ${bestL} · ${bestT}.`;
 }
 
 function tptAnswerStrip(a){
