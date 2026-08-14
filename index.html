@@ -150,7 +150,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 .tpt-explain-box{
   margin-top:12px;
   border:2px solid #ff2d2d;
-  background:#fff5f5;
+  background:#fff8dc;
   border-radius:12px;
   padding:10px 14px;
   font-size:14px;
@@ -188,6 +188,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 }
 
 </style>
+
+<style>
+/* v0.9.8 — explicación psicológica */
+.tpt-review-explanation,
+.tpt-review-card .explanation,
+.tpt-review-card .tpt-explanation,
+.tpt-review-card .feedback,
+.tpt-review-card .review-feedback,
+.tpt-review-card .tpt-review-feedback {
+    background: #fff8dc !important;
+    border-color: #e0b52b !important;
+    color: #302a1f !important;
+}
+</style>
+
 </head>
 <body>
 <div class="app">
@@ -278,7 +293,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
     <div id="qFeedback"></div>
     <div class="control" style="margin-top:15px">
       <button class="btn secondary" id="blankBtn">Dejar en blanco</button>
-      <button class="btn primary hidden" id="nextBtn">Siguiente</button>
+      <button class="btn secondary hidden" id="prevBtn">Anterior</button>
+       <button class="btn primary hidden" id="nextBtn">Siguiente</button>
       <button class="btn danger hidden" id="finishBtn">Finalizar</button>
     </div>
    </section>
@@ -311,7 +327,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v0.9.6";
+const APP_VERSION = "v0.9.8";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -577,9 +593,10 @@ function begin(mode,mins){
  showQuestion();
 }
 function tick(){let m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById("timer").textContent=`${m}:${String(s).padStart(2,"0")}`}
+let navDraftAnswers={};
 function showQuestion(){
  answered=false;pendingAnswer=null;qStart=Date.now();
- document.getElementById("nextBtn").classList.add("hidden");document.getElementById("finishBtn").classList.add("hidden");
+ document.getElementById("nextBtn").classList.add("hidden");document.getElementById("finishBtn").classList.add("hidden");document.getElementById("prevBtn").classList.toggle("hidden",idx===0);
  document.getElementById("qFeedback").innerHTML="";document.getElementById("qVisual").innerHTML="";
  const x=session[idx];document.getElementById("qCounter").textContent=`Pregunta ${idx+1} de ${session.length}`;
  document.getElementById("qTag").textContent=currentMode==="knowledge"?x.sub:(currentMode==="aptitude"?`${x.block} · ${x.kind}`:(tptFullMode?`TPT · ítem ${x.id}`:x.name));
@@ -643,6 +660,13 @@ function commitPending(){
  }
  save();
  renderAllStats();
+}
+function previous(){
+  if(idx<=0)return;
+  /* Volver no puntúa ni cierra la respuesta actual; simplemente permite revisar la anterior. */
+  idx--;
+  showQuestion();
+  renderAllStats();
 }
 function next(){commitPending();idx++;showQuestion();renderAllStats()}
 
@@ -945,7 +969,7 @@ document.getElementById("kDifficulty").addEventListener("change",updateKnowledge
 document.getElementById("kMode").addEventListener("change",updateKnowledgeCountOptions);
 
 document.getElementById("startKnowledge").onclick=startKnowledge;document.getElementById("startAptitude").onclick=startAptitude;document.getElementById("startPersonality").onclick=startPersonality;
-document.getElementById("nextBtn").onclick=next;document.getElementById("finishBtn").onclick=finishSession;document.getElementById("blankBtn").onclick=leaveBlank;document.getElementById("backHome").onclick=()=>showView("home");
+document.getElementById("prevBtn").onclick=previous;document.getElementById("nextBtn").onclick=next;document.getElementById("finishBtn").onclick=finishSession;document.getElementById("blankBtn").onclick=leaveBlank;document.getElementById("backHome").onclick=()=>showView("home");
 document.getElementById("resetAll").onclick=()=>{if(confirm("¿Borrar todo el progreso guardado?")){localStorage.removeItem("metroPrepV084");location.reload()}};
 buildTree();buildCompetency();buildTptTree();renderAllStats();
 </script>
