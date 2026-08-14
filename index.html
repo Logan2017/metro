@@ -42,22 +42,41 @@ select,input[type=number]{border:1px solid #d4d8e0;border-radius:9px;background:
 .comp-row{margin:10px 0}.comp-row .head{display:flex;justify-content:space-between;font-size:12px}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 
-.tpt-review{display:grid;gap:16px;margin-top:16px}
-.tpt-review-card{border:1px solid #dfe3ea;border-left-width:7px;border-radius:16px;padding:18px;background:#fff}
+
+
+
+.tpt-review-groups{display:grid;gap:26px;margin-top:16px}
+.tpt-scale-review h4{font-size:20px;margin:0 0 12px;color:#1f2937}
+.tpt-review{display:grid;gap:14px}
+.tpt-review-card{border:1px solid #dfe3ea;border-left:7px solid #dfe3ea;border-radius:16px;padding:16px;background:#fff}
 .tpt-review-card.tpt-red{border-left-color:#dc3545}
 .tpt-review-card.tpt-yellow{border-left-color:#f0ad00}
 .tpt-review-card.tpt-green2{border-left-color:#76b947}
 .tpt-review-card.tpt-green{border-left-color:#198754}
-.tpt-review-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;font-size:17px;line-height:1.45}
+.tpt-review-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+.tpt-question{font-size:17px;line-height:1.42}
 .tpt-pill{white-space:nowrap;font-weight:700;font-size:14px}
-.tpt-review-meta{display:flex;flex-wrap:wrap;gap:10px 24px;margin:14px 0;color:#4b5563}
-.tpt-best{margin:10px 0;padding:11px 14px;border-radius:10px;background:#f4f7fb}
-.tpt-explain{margin-top:12px;line-height:1.5}
-@media(max-width:700px){
+.tpt-compact-row{display:flex;gap:20px;align-items:center;justify-content:space-between;margin:14px 0 10px}
+.tpt-strip{display:flex;gap:4px;align-items:end}
+.tpt-choice{width:48px;text-align:center;border:1px solid #d1d5db;border-radius:8px;overflow:hidden;background:#f8fafc}
+.tpt-choice-letter{font-weight:800;padding:3px 0;background:#eef2f7}
+.tpt-choice-dot{font-size:18px;line-height:24px;padding-top:2px}
+.tpt-choice-score{font-weight:800;padding:3px 0;background:#f3f4f6}
+.tpt-choice.max .tpt-choice-dot{background:#78d900}
+.tpt-choice.good .tpt-choice-dot{background:#d9f200}
+.tpt-choice.mid .tpt-choice-dot{background:#ffb000}
+.tpt-choice.bad .tpt-choice-dot{background:#ef2b2d;color:#fff}
+.tpt-choice.selected{outline:3px solid #111827;outline-offset:1px}
+.tpt-user-answer{font-size:14px;color:#4b5563;white-space:nowrap}
+.tpt-user-answer span{font-weight:700}
+.tpt-explain{margin-top:8px;line-height:1.45;padding:12px 14px}
+@media(max-width:760px){
  .tpt-review-head{display:block}
- .tpt-pill{display:inline-block;margin-top:10px}
- .tpt-review-meta{display:block}
- .tpt-review-meta span{display:block;margin:6px 0}
+ .tpt-pill{display:inline-block;margin-top:8px}
+ .tpt-compact-row{display:block}
+ .tpt-user-answer{margin-top:10px;white-space:normal}
+ .tpt-strip{justify-content:flex-start}
+ .tpt-choice{width:44px}
 }
 
 </style>
@@ -184,7 +203,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v0.9.1";
+const APP_VERSION = "v0.9.2";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -561,23 +580,66 @@ function tptSpecificReason(a,q){
  else nuance="Tu respuesta se sitúa en el extremo opuesto al que más puntúa en este ítem.";
  return `<b>Qué evalúa:</b> ${tptScalePurpose(a.scale)}.<br><br><b>Cómo se corrige:</b> ${direction}<br><br><b>Interpretación:</b> ${nuance} La alternativa de máxima puntuación es <b>${bestL} · ${bestT}</b>.`;
 }
-function renderTptReview(){
- const sorted=[...answers].sort((a,b)=>a.score-b.score || a.id-b.id);
- return `<h3 style="margin-top:28px">Revisión de respuestas</h3>
- <p class="small">Primero aparecen las respuestas que más se alejan de la puntuación máxima. El semáforo indica los puntos obtenidos en cada ítem, no si una afirmación es objetivamente “verdadera” o “falsa”.</p>
- <div class="tpt-review">${sorted.map(a=>{
-   const q=TPT_QUESTIONS.find(x=>x.id===a.id)?.q||"";
-   const tr=tptTraffic(a.score), best=tptBestRaw(a);
-   return `<div class="tpt-review-card ${tr.cls}">
-     <div class="tpt-review-head"><span><b>${a.id}. ${q}</b></span><span class="tpt-pill">${tr.icon} ${tr.label}</span></div>
-     <div class="tpt-review-meta">
-       <span><b>Tu respuesta:</b> ${tptLetter(a.raw)} · ${tptAnswerText(a.raw)}</span>
-       <span><b>Puntuación:</b> ${a.score}/3</span>
-       <span><b>Escala:</b> ${a.scale}</span>
-     </div>
-     ${a.score<3?`<div class="tpt-best"><b>Respuesta que más puntúa:</b> ${tptLetter(best)} · ${tptAnswerText(best)}</div>`:""}
-     <div class="notice tpt-explain">${tptSpecificReason(a,q)}</div>
+
+function tptShortExplanation(a,q){
+ const best=tptBestRaw(a);
+ const bestL=tptLetter(best), bestT=tptAnswerText(best);
+ const dirText=a.dir===1
+   ? "En esta pregunta puntúa más identificarte con la conducta descrita."
+   : "En esta pregunta puntúa más no identificarte con la conducta descrita.";
+ if(a.score===3){
+   return `<b>Respuesta de máxima puntuación.</b> ${dirText}`;
+ }
+ if(a.score===2){
+   return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta está próxima al extremo favorable.`;
+ }
+ if(a.score===1){
+   return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta se aleja del criterio de esta escala.`;
+ }
+ return `<b>La opción que más puntúa es ${bestL} · ${bestT}.</b> Tu respuesta está en el extremo contrario al criterio de esta pregunta.`;
+}
+function tptAnswerStrip(a){
+ const letters=["A","B","C","D"];
+ return `<div class="tpt-strip">${letters.map((L,raw)=>{
+   const pts=a.dir===1?raw:3-raw;
+   const selected=raw===a.raw?" selected":"";
+   const tone=pts===3?"max":pts===2?"good":pts===1?"mid":"bad";
+   return `<div class="tpt-choice ${tone}${selected}">
+     <div class="tpt-choice-letter">${L}</div>
+     <div class="tpt-choice-dot">${selected?"●":"○"}</div>
+     <div class="tpt-choice-score">${pts}</div>
    </div>`;
+ }).join("")}</div>`;
+}
+function renderTptReview(){
+ const scaleOrder=Object.keys(TPT_SCALES);
+ const activeScales=tptFullMode
+   ? scaleOrder
+   : scaleOrder.filter(name=>answers.some(a=>a.scale===name));
+
+ return `<h3 style="margin-top:28px">Revisión de respuestas</h3>
+ <p class="small">Las preguntas aparecen en su orden original dentro de cada escala. El color representa la puntuación obtenida en ese ítem.</p>
+ <div class="tpt-review-groups">${activeScales.map(scale=>{
+   const aa=answers.filter(a=>a.scale===scale).sort((a,b)=>a.id-b.id);
+   if(!aa.length)return "";
+   return `<section class="tpt-scale-review">
+     <h4>${scale}</h4>
+     <div class="tpt-review">${aa.map(a=>{
+       const q=TPT_QUESTIONS.find(x=>x.id===a.id)?.q||"";
+       const tr=tptTraffic(a.score);
+       return `<div class="tpt-review-card ${tr.cls}">
+         <div class="tpt-review-head">
+           <div class="tpt-question"><b>${a.id}. ${q}</b></div>
+           <span class="tpt-pill">${tr.icon} ${tr.label}</span>
+         </div>
+         <div class="tpt-compact-row">
+           <div>${tptAnswerStrip(a)}</div>
+           <div class="tpt-user-answer"><b>Tu respuesta:</b> ${tptLetter(a.raw)} · ${tptAnswerText(a.raw)} <span>(${a.score}/3)</span></div>
+         </div>
+         <div class="notice tpt-explain">${tptShortExplanation(a,q)}</div>
+       </div>`;
+     }).join("")}</div>
+   </section>`;
  }).join("")}</div>`;
 }
 
