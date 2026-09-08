@@ -265,11 +265,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
    <section id="home" class="view card">
     <h2 class="section-title">Plan de entrenamiento</h2>
     <div class="modecards">
-      <div class="modecard"><h3>Conocimientos</h3><p>Estudio por temas, subtemas, dificultad y preguntas falladas. El número de preguntas disponibles se adapta automáticamente a la selección actual. El simulacro 80+5 utiliza 85 preguntas únicas sin repetir.</p><button class="btn primary go" data-go="knowledge">Entrenar</button></div>
+      <div class="modecard"><h3>Conocimientos</h3><p>Estudio por temas, subtemas, dificultad y preguntas falladas. El número de preguntas disponibles se adapta automáticamente a la selección actual. El simulacro EMTrena utiliza 80 preguntas + 3 de reserva, 35 minutos y penalización de 0,25 por error.</p><button class="btn primary go" data-go="knowledge">Entrenar</button></div>
       <div class="modecard"><h3>Aptitudinal</h3><p>Razonamiento verbal y espacial. El simulacro de 50 preguntas solo se activa cuando haya 50 preguntas únicas disponibles.</p><button class="btn primary go" data-go="aptitude">Entrenar</button></div>
       <div class="modecard"><h3>TPT</h3><p>Realiza el TPT completo de 160 ítems o entrena una o varias de sus 16 escalas con las preguntas exactas que corresponden a cada una.</p><button class="btn primary go" data-go="personality">Entrenar</button></div>
     </div>
-    <div class="notice" id="bankVersionNotice"><b>Banco <span id="bankVersion"></span></b></div>
+    <div class="notice" id="bankVersionNotice"><b>Banco <span id="bankVersion"></span></b><br>
+      v1.0.4 corrige el formato del simulacro aportado: conocimientos 80+3 / 35 min / −0,25; psicotécnicos 60 / 35 min / −0,33. Mantiene TPT separado.</div>
    </section>
 
    <section id="knowledge" class="view card hidden">
@@ -277,7 +278,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
     <div class="setup-row"><div class="label">Preguntas</div><div class="control"><select id="kCount"></select></div></div>
     <div class="setup-row"><div class="label">Minutos</div><div class="control"><select id="kMinutes"><option value="0">Sin límite</option><option>10</option><option>20</option><option>40</option><option value="50">50</option><option value="60" selected>60</option></select></div></div>
     <div class="setup-row"><div class="label">Dificultad</div><div class="control"><select id="kDifficulty"><option value="all">Aleatoria</option><option value="easy">Fácil</option><option value="medium">Media</option><option value="hard">Difícil</option></select></div></div>
-    <div class="setup-row"><div class="label">Modo</div><div class="control"><select id="kMode"><option value="normal">Normal</option><option value="failed">Preguntas falladas</option><option value="new">Solo nuevas</option><option value="smart">Repaso inteligente</option><option value="exam">Simulacro 80+5 / 50 min</option></select></div></div>
+    <div class="setup-row"><div class="label">Modo</div><div class="control"><select id="kMode"><option value="normal">Normal</option><option value="failed">Preguntas falladas</option><option value="new">Solo nuevas</option><option value="smart">Repaso inteligente</option><option value="exam">Simulacro EMTrena · 80+3 / 35 min</option></select></div></div>
     <div class="setup-row"><div class="label">Ayuda</div><div class="control"><select id="kHelp"><option value="yes">Con ayuda</option><option value="no" selected>Sin ayuda</option></select></div></div>
 
     <div class="tree" id="knowledgeTree"></div>
@@ -288,8 +289,8 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
    <section id="aptitude" class="view card hidden">
     <h2 class="section-title">Aptitudinal</h2>
     <div class="setup-row"><div class="label">Bloque</div><div class="control"><select id="aBlock"><option value="mixed">Mixto verbal + espacial</option><option value="verbal">Razonamiento verbal</option><option value="spatial">Razonamiento espacial</option></select></div></div>
-    <div class="setup-row"><div class="label">Preguntas</div><div class="control"><select id="aCount"><option>10</option><option selected>20</option><option>30</option><option value="50">50</option></select></div></div>
-    <div class="setup-row"><div class="label">Modo</div><div class="control"><select id="aMode"><option value="training">Entrenamiento</option><option value="exam">Simulacro oficial: 50 / 40 min</option></select></div></div>
+    <div class="setup-row"><div class="label">Preguntas</div><div class="control"><select id="aCount"><option>10</option><option selected>20</option><option>30</option><option>40</option><option value="60">60</option></select></div></div>
+    <div class="setup-row"><div class="label">Modo</div><div class="control"><select id="aMode"><option value="training">Entrenamiento</option><option value="exam">Simulacro EMTrena · 60 / 35 min</option></select></div></div>
     <div class="tree">
       <div class="tree-group"><div class="tree-head"><input type="checkbox" checked data-apt="sinonimos"> Sinónimos</div></div>
       <div class="tree-group"><div class="tree-head"><input type="checkbox" checked data-apt="antonimos"> Antónimos</div></div>
@@ -360,7 +361,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
    </div>
    <div class="card" style="margin-top:18px">
     <h3 style="margin-top:0">Reglas de examen</h3>
-    <div class="small"><b>Aptitudinal:</b> 50 preguntas · 40 min · +1 / −1/3 / blanco 0.<br><br><b>Conocimientos:</b> 80+5 preguntas · 50 min · +1 / −1/3 / blanco 0.<br><br><b>Personalidad:</b> 45 min · mínimo 50/100 según la información aportada · baja consistencia = no apto.</div>
+    <div class="small"><b>Simulacro EMTrena · Conocimientos:</b> 80 preguntas + 3 de reserva · 35 min · +1 / −0,25 / blanco 0 · máximo 40 puntos · corte 20.<br><br><b>Simulacro EMTrena · Psicotécnicos:</b> 60 preguntas · 35 min · +1 / −0,33 / blanco 0.<br><br><b>Personalidad:</b> 40 min en el simulacro aportado. El TPT de esta herramienta mantiene su entrenamiento independiente.</div>
    </div>
   </aside>
  </div>
@@ -368,7 +369,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:25px 0}
 </div>
 
 <script>
-const APP_VERSION = "v1.0.3";
+const APP_VERSION = "v1.0.4";
 
 const KNOWLEDGE_TREE = {"Metro de Madrid S.A.":["Red ferroviaria explotada por Metro de Madrid: líneas y estaciones","Metro de Madrid en cifras","Títulos de transporte utilizados en Metro de Madrid","Reglamento de Viajeros. Acceso con bicicletas, animales y globos"],"Normativa interna de circulación de Metro de Madrid":["Definiciones","Título 1 - Preámbulo","Título 2 - Principios básicos","Título 3 - Señalización","Título 4 - Circulación de trenes","Título 5 - Averías, incidencias y accidentes en el servicio","Título 6 - Disposiciones finales"],"El servicio público de transporte de viajeros - Ley 5/85":["Exposición de motivos","Artículo 1","Artículo 2","Artículo 3","Artículo 4","Artículo 5","Artículo 6","Artículo 7","Artículo 8","Artículo 9","Artículo 10","Artículo 11","Artículo 12","Artículo 13","Artículo 14","Artículo 15"],"Conocimientos generales sobre el Consorcio Regional de Transportes de Madrid (CRTM)":["CRTM: creación, finalidad y modos coordinados","Oficinas de Gestión y atención presencial","Consejo de Administración y organización","Planificación de los servicios de transportes","Gestión comercial y atención al cliente","Planificación de infraestructuras, estudios y proyectos"]};
 
@@ -493,11 +494,11 @@ function updateKnowledgeCountOptions(){
 
  select.innerHTML="";
 
- // El simulacro tiene una longitud fija de 85 preguntas.
+ // El simulacro EMTrena aportado tiene 80 preguntas + 3 de reserva.
  if(mode==="exam"){
    const opt=document.createElement("option");
-   opt.value="85";
-   opt.textContent=available>=85 ? "85" : `85 (solo ${available} disponibles)`;
+   opt.value="83";
+   opt.textContent=available>=83 ? "83 (80+3 reserva)" : `83 (solo ${available} disponibles)`;
    select.appendChild(opt);
    select.disabled=true;
  }else{
@@ -535,9 +536,9 @@ function updateKnowledgeCountOptions(){
  const info=document.getElementById("knowledgeAvailability");
  if(info){
    if(mode==="exam"){
-     info.innerHTML=available>=85
-       ? `<b>${available}</b> preguntas únicas disponibles con la selección actual. El simulacro utilizará 85.`
-       : `<b>${available}</b> preguntas únicas disponibles. Para iniciar el simulacro 80+5 hacen falta al menos 85.`;
+     info.innerHTML=available>=83
+       ? `<b>${available}</b> preguntas únicas disponibles con la selección actual. El simulacro utilizará 83 (80+3 de reserva).`
+       : `<b>${available}</b> preguntas únicas disponibles. Para iniciar el simulacro 80+3 hacen falta al menos 83.`;
    }else{
      info.innerHTML=`<b>${available}</b> preguntas únicas disponibles con los temas, dificultad y modo seleccionados.`;
    }
@@ -580,12 +581,12 @@ function startKnowledge(){
  examMode=mode==="exam";
  helpMode=document.getElementById("kHelp").value==="yes"&&!examMode;
 
- if(examMode){count=85;mins=50}
+ if(examMode){count=83;mins=35}
 
  session=shuffle(pool);
 
- if(examMode && session.length<85){
-   alert(`El simulacro 80+5 requiere 85 preguntas únicas y con la selección actual hay ${session.length}.\n\nSelecciona más temas o cambia los filtros.`);
+ if(examMode && session.length<83){
+   alert(`El simulacro EMTrena 80+3 requiere 83 preguntas únicas y con la selección actual hay ${session.length}.\n\nSelecciona más temas o cambia los filtros.`);
    return;
  }
 
@@ -601,10 +602,10 @@ function startAptitude(){
  let pool=APT.filter(x=>kinds.includes(x.kind)&&(block==="mixed"||x.block===block));
  if(!pool.length)return alert("Selecciona al menos una categoría.");
  let count=+document.getElementById("aCount").value,mins=0;examMode=mode==="exam";helpMode=!examMode;
- if(examMode){count=50;mins=40}
+ if(examMode){count=60;mins=35}
  session=shuffle(pool);
- if(examMode && session.length < 50){
-   alert(`El simulacro aptitudinal requiere 50 preguntas únicas y ahora mismo solo hay ${session.length} disponibles.\n\nNo se iniciará hasta que ampliemos el banco.`);
+ if(examMode && session.length < 60){
+   alert(`El simulacro psicotécnico EMTrena requiere 60 preguntas únicas y ahora mismo solo hay ${session.length} disponibles.\n\nNo se iniciará hasta que haya suficientes preguntas únicas.`);
    return;
  }
  if(session.length < count){
@@ -910,9 +911,22 @@ function finishSession(){
    <h3>Resultado TPT</h3><table class="result-table"><thead><tr><th>Escala</th><th>Puntuación</th><th>Referencia</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>
    <div class="notice">Puntuación de entrenamiento calculada con A=0, B=1, C=2, D=3 en ítems directos y 3,2,1,0 en inversos, según la clave aportada.</div>${renderTptReview()}`;
   }else{
-   const net=(correct-wrong/3).toFixed(2);
+   const penalty = currentMode==="knowledge" && examMode ? 0.25
+                 : currentMode==="aptitude" && examMode ? 0.33
+                 : 1/3;
+   const netRaw = correct - wrong*penalty;
+   const net = netRaw.toFixed(2);
    html=`<div class="statgrid"><div class="stat"><b>${correct}</b><span>correctas</span></div><div class="stat"><b>${wrong}</b><span>errores</span></div><div class="stat"><b>${blank}</b><span>blancas</span></div><div class="stat"><b>${net}</b><span>puntuación neta</span></div></div>`;
-   html+=`<p class="small">Regla aplicada: +1 por acierto, −1/3 por error y 0 por respuesta en blanco.</p>`;
+   if(currentMode==="knowledge" && examMode){
+     const sobre40=(netRaw/80*40).toFixed(2);
+     const apto=Number(sobre40)>=20;
+     html+=`<div class="notice"><b>Equivalencia del simulacro:</b> ${sobre40}/40 · ${apto?"supera":"no alcanza"} el corte de 20/40.</div>`;
+     html+=`<p class="small">Regla aplicada según el simulacro aportado: +1 por acierto, −0,25 por error y 0 por respuesta en blanco. Las 3 preguntas de reserva se incluyen para entrenamiento, pero la equivalencia sobre 40 se calcula sobre las 80 ordinarias.</p>`;
+   }else if(currentMode==="aptitude" && examMode){
+     html+=`<p class="small">Regla aplicada según el simulacro aportado: +1 por acierto, −0,33 por error y 0 por respuesta en blanco.</p>`;
+   }else{
+     html+=`<p class="small">Regla de entrenamiento: +1 por acierto, −1/3 por error y 0 por respuesta en blanco.</p>`;
+   }
  }
 
  document.getElementById("resultSummary").innerHTML=html;
